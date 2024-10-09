@@ -1,0 +1,1 @@
+Ahora, vamos a crear el archivo `obtener_tarea.php` para obtener los detalles de una tarea específica:
