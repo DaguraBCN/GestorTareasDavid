@@ -1,0 +1,414 @@
+Empecemos con la creación de la base de datos "gestor_tareas_David" y la tabla:
+CREATE DATABASE gestor_tareas_David;
+
+USE gestor_tareas_David;
+
+CREATE TABLE tareas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    descripcion TEXT,
+    estado ENUM('Pendiente', 'Ejecución', 'Finalizada') DEFAULT 'Pendiente',
+    fecha_limite DATE,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+Página principal "index.php": 
+<?php
+require_once 'conexion.php';
+?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="David Gutierrez">
+    <title>Gestor de Tareas</title>
+    <link rel="stylesheet" href="CSS/style.css">
+</head>
+<body>
+    <header>
+        <h1>Gestor de Tareas</h1>
+    </header>
+    <main>
+        <section id="nueva-tarea">
+            <h2>Nueva Tarea</h2>
+            <form id="form-nueva-tarea">
+                <input type="text" id="titulo" name="titulo" placeholder="Título" required>
+                <textarea id="descripcion" name="descripcion" placeholder="Descripción"></textarea>
+                <input type="date" id="fecha_limite" name="fecha_limite" required>
+                <button type="submit">Crear Tarea</button>
+            </form>
+        </section>
+        <section id="tareas">
+            <div class="columna" id="pendientes">
+                <h2>Pendientes</h2>
+            </div>
+            <div class="columna" id="ejecucion">
+                <h2>En Ejecución</h2>
+            </div>
+            <div class="columna" id="finalizadas">
+                <h2>Finalizadas</h2>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal de edición -->
+    <div id="modal-editar" class="modal">
+        <div class="modal-contenido">
+            <span class="cerrar">&times;</span>
+            <h2>Editar Tarea</h2>
+            <form id="form-editar-tarea">
+                <input type="hidden" id="editar-id" name="id">
+                <input type="text" id="editar-titulo" name="titulo" placeholder="Título" required>
+                <textarea id="editar-descripcion" name="descripcion" placeholder="Descripción"></textarea>
+                <input type="date" id="editar-fecha_limite" name="fecha_limite" required>
+                <select id="editar-estado" name="estado">
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Ejecución">En Ejecución</option>
+                    <option value="Finalizada">Finalizada</option>
+                </select>
+                <button type="submit">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+    <script src="JS/script.js"></script>
+</body>
+</html>
+
+Script para crear nuevas tareas "crear_tarea.php": 
+<?php
+
+require_once 'conexion.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $titulo = $_POST['titulo'];
+    $descripcion = $_POST['descripcion'];
+    $fecha_limite = $_POST['fecha_limite'];
+
+    $stmt = $pdo->prepare("INSERT INTO tareas (titulo, descripcion, fecha_limite) VALUES (?, ?, ?)");
+    
+    if ($stmt->execute([$titulo, $descripcion, $fecha_limite])) {
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false]);
+    }
+}
+
+Script para actualizar tareas existentes "actualizar_tarea.php": 
+<?php
+
+require_once 'conexion.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id = $_POST['id'];
+    $estado = $_POST['estado'];
+
+    $stmt = $pdo->prepare("UPDATE tareas SET estado = ? WHERE id = ?");
+    
+    if ($stmt->execute([$estado, $id])) {
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false]);
+    }
+}
+
+Script para obtener las tareas de la base de datos "obtener_tareas.php": 
+<?php
+
+require_once 'conexion.php';
+
+$stmt = $pdo->query("SELECT * FROM tareas ORDER BY fecha_creacion DESC");
+$tareas = $stmt->fetchAll();
+
+echo json_encode($tareas);
+
+Hoja de estilos CSS "estilos.css": 
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    padding: 1em;
+}
+
+main {
+    padding: 1em;
+}
+
+#nueva-tarea {
+    margin-bottom: 2em;
+}
+
+#form-nueva-tarea, #form-editar-tarea {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    max-width: 300px;
+}
+
+#tareas {
+    display: flex;
+    gap: 1em;
+    flex-wrap: wrap;
+}
+
+.columna {
+    flex: 1;
+    min-width: 250px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 1em;
+}
+
+.tarea {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 1em;
+    margin-bottom: 1em;
+}
+
+@media (max-width: 768px) {
+    #tareas {
+        flex-direction: column;
+    }
+}
+
+/* Estilos para el modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-contenido {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+}
+
+.cerrar {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.cerrar:hover,
+.cerrar:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+JavaScript para la interactividad del frontend "script.js": 
+document.addEventListener('DOMContentLoaded', () => {
+    cargarTareas();
+
+    document.getElementById('form-nueva-tarea').addEventListener('submit', crearTarea);
+    document.getElementById('form-editar-tarea').addEventListener('submit', guardarEdicionTarea);
+
+    // Cerrar el modal
+    document.querySelector('.cerrar').addEventListener('click', () => {
+        document.getElementById('modal-editar').style.display = 'none';
+    });
+
+    // Cerrar el modal si se hace clic fuera de él
+    window.addEventListener('click', (event) => {
+        if (event.target == document.getElementById('modal-editar')) {
+            document.getElementById('modal-editar').style.display = 'none';
+        }
+    });
+});
+
+function cargarTareas() {
+    fetch('obtener_tareas.php')
+        .then(response => response.json())
+        .then(tareas => {
+            const columnas = {
+                'Pendiente': document.getElementById('pendientes'),
+                'Ejecución': document.getElementById('ejecucion'),
+                'Finalizada': document.getElementById('finalizadas')
+            };
+
+            for (const estado in columnas) {
+                columnas[estado].innerHTML = `<h2>${estado}</h2>`;
+            }
+
+            tareas.forEach(tarea => {
+                const tareaElement = crearElementoTarea(tarea);
+                columnas[tarea.estado].appendChild(tareaElement);
+            });
+        });
+}
+
+function crearElementoTarea(tarea) {
+    const tareaElement = document.createElement('div');
+    tareaElement.className = 'tarea';
+    tareaElement.innerHTML = `
+        <h3>${tarea.titulo}</h3>
+        <p>${tarea.descripcion}</p>
+        <p>Fecha límite: ${tarea.fecha_limite}</p>
+        <select class="estado-tarea" data-id="${tarea.id}">
+            <option value="Pendiente" ${tarea.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+            <option value="Ejecución" ${tarea.estado === 'Ejecución' ? 'selected' : ''}>En Ejecución</option>
+            <option value="Finalizada" ${tarea.estado === 'Finalizada' ? 'selected' : ''}>Finalizada</option>
+        </select>
+        <button class="editar-tarea" data-id="${tarea.id}">Editar</button>
+    `;
+
+    tareaElement.querySelector('.estado-tarea').addEventListener('change', actualizarEstadoTarea);
+    tareaElement.querySelector('.editar-tarea').addEventListener('click', abrirModalEdicion);
+
+    return tareaElement;
+}
+
+function crearTarea(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+
+    fetch('crear_tarea.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            cargarTareas();
+            event.target.reset();
+        } else {
+            alert('Error al crear la tarea');
+        }
+    });
+}
+
+function actualizarEstadoTarea(event) {
+    const id = event.target.dataset.id;
+    const nuevoEstado = event.target.value;
+
+    fetch('actualizar_tarea.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `id=${id}&estado=${nuevoEstado}`
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            cargarTareas();
+        } else {
+            alert('Error al actualizar el estado de la tarea');
+        }
+    });
+}
+
+function abrirModalEdicion(event) {
+    const id = event.target.dataset.id;
+    fetch(`obtener_tarea.php?id=${id}`)
+        .then(response => response.json())
+        .then(tarea => {
+            document.getElementById('editar-id').value = tarea.id;
+            document.getElementById('editar-titulo').value = tarea.titulo;
+            document.getElementById('editar-descripcion').value = tarea.descripcion;
+            document.getElementById('editar-fecha_limite').value = tarea.fecha_limite;
+            document.getElementById('editar-estado').value = tarea.estado;
+            document.getElementById('modal-editar').style.display = 'block';
+        });
+}
+
+function guardarEdicionTarea(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+
+    fetch('editar_tarea.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            document.getElementById('modal-editar').style.display = 'none';
+            cargarTareas();
+        } else {
+            alert('Error al editar la tarea');
+        }
+    });
+}
+
+Archivo de conexión a la base de datos "conexion.php": 
+<?php
+
+$host = 'localhost';
+$db   = 'gestor_tareas_David';
+$user = 'root';
+$pass = '';
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+
+
+try {
+    $pdo = new PDO($dsn, $user, $pass);
+} catch (\PDOException $e) {
+    throw new \PDOException($e->getMessage(), (int)$e->getCode());
+}
+
+Archivo para obtener los detalles de una tarea específica "obtener_tarea.php":
+<?php
+
+require_once 'conexion.php';
+
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+    $stmt = $pdo->prepare("SELECT * FROM tareas WHERE id = ?");
+    $stmt->execute([$id]);
+    $tarea = $stmt->fetch();
+
+    if ($tarea) {
+        echo json_encode($tarea);
+    } else {
+        echo json_encode(['error' => 'Tarea no encontrada']);
+    }
+} else {
+    echo json_encode(['error' => 'ID de tarea no proporcionado']);
+}
+
+Archivo para manejar la actualización de los datos en la base de datos "editar_tarea.php":
+<?php
+// editar_tarea.php
+require_once 'conexion.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id = $_POST['id'];
+    $titulo = $_POST['titulo'];
+    $descripcion = $_POST['descripcion'];
+    $fecha_limite = $_POST['fecha_limite'];
+    $estado = $_POST['estado'];
+
+    $stmt = $pdo->prepare("UPDATE tareas SET titulo = ?, descripcion = ?, fecha_limite = ?, estado = ? WHERE id = ?");
+    
+    if ($stmt->execute([$titulo, $descripcion, $fecha_limite, $estado, $id])) {
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false]);
+    }
+} else {
+    echo json_encode(['success' => false, 'error' => 'Método no permitido']);
+}
