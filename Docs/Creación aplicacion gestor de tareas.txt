@@ -12,7 +12,7 @@ CREATE TABLE tareas (
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-Página principal "index.php": 
+1.- Página principal "index.php": 
 <?php
 require_once 'conexion.php';
 ?>
@@ -75,7 +75,7 @@ require_once 'conexion.php';
 </body>
 </html>
 
-Script para crear nuevas tareas "crear_tarea.php": 
+2.- Script para crear nuevas tareas "crear_tarea.php": 
 <?php
 
 require_once 'conexion.php';
@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-Script para actualizar tareas existentes "actualizar_tarea.php": 
+3.- Script para actualizar tareas existentes "actualizar_tarea.php": 
 <?php
 
 require_once 'conexion.php';
@@ -112,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-Script para obtener las tareas de la base de datos "obtener_tareas.php": 
+4.- Script para obtener las tareas de la base de datos "obtener_tareas.php": 
 <?php
 
 require_once 'conexion.php';
@@ -122,7 +122,7 @@ $tareas = $stmt->fetchAll();
 
 echo json_encode($tareas);
 
-Hoja de estilos CSS "estilos.css": 
+5.- Hoja de estilos CSS "estilos.css": 
 
 body {
     font-family: Arial, sans-serif;
@@ -217,7 +217,7 @@ main {
     cursor: pointer;
 }
 
-JavaScript para la interactividad del frontend "script.js": 
+6.- JavaScript para la interactividad del frontend "script.js": 
 document.addEventListener('DOMContentLoaded', () => {
     cargarTareas();
 
@@ -352,7 +352,7 @@ function guardarEdicionTarea(event) {
     });
 }
 
-Archivo de conexión a la base de datos "conexion.php": 
+7.- Archivo de conexión a la base de datos "conexion.php": 
 <?php
 
 $host = 'localhost';
@@ -370,7 +370,7 @@ try {
     throw new \PDOException($e->getMessage(), (int)$e->getCode());
 }
 
-Archivo para obtener los detalles de una tarea específica "obtener_tarea.php":
+8.- Archivo para obtener los detalles de una tarea específica "obtener_tarea.php":
 <?php
 
 require_once 'conexion.php';
@@ -390,7 +390,7 @@ if (isset($_GET['id'])) {
     echo json_encode(['error' => 'ID de tarea no proporcionado']);
 }
 
-Archivo para manejar la actualización de los datos en la base de datos "editar_tarea.php":
+9.- Archivo para manejar la actualización de los datos en la base de datos "editar_tarea.php":
 <?php
 // editar_tarea.php
 require_once 'conexion.php';
