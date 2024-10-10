@@ -91,3 +91,21 @@ main {
     text-decoration: none;
     cursor: pointer;
 }
+
+.boton-eliminar {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.boton-eliminar:hover {
+    background-color: #d32f2f;
+}

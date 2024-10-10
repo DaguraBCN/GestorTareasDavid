@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', () => {
     cargarTareas();
 
@@ -15,6 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('modal-editar').style.display = 'none';
         }
     });
+
+    // Eliminar tarea desde el modal
+    document.getElementById('eliminar-tarea-modal').addEventListener('click', eliminarTareaModal);
 });
 
 function cargarTareas() {
@@ -51,10 +55,12 @@ function crearElementoTarea(tarea) {
             <option value="Finalizada" ${tarea.estado === 'Finalizada' ? 'selected' : ''}>Finalizada</option>
         </select>
         <button class="editar-tarea" data-id="${tarea.id}">Editar</button>
+        <button class="boton-eliminar" data-id="${tarea.id}">Eliminar</button>
     `;
 
     tareaElement.querySelector('.estado-tarea').addEventListener('change', actualizarEstadoTarea);
     tareaElement.querySelector('.editar-tarea').addEventListener('click', abrirModalEdicion);
+    tareaElement.querySelector('.boton-eliminar').addEventListener('click', eliminarTarea);
 
     return tareaElement;
 }
@@ -130,4 +136,47 @@ function guardarEdicionTarea(event) {
             alert('Error al editar la tarea');
         }
     });
+}
+
+function eliminarTarea(event) {
+    const id = event.target.dataset.id;
+    if (confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
+        fetch('eliminar_tarea.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `id=${id}`
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                cargarTareas();
+            } else {
+                alert('Error al eliminar la tarea');
+            }
+        });
+    }
+}
+
+function eliminarTareaModal() {
+    const id = document.getElementById('editar-id').value;
+    if (confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
+        fetch('eliminar_tarea.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `id=${id}`
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                document.getElementById('modal-editar').style.display = 'none';
+                cargarTareas();
+            } else {
+                alert('Error al eliminar la tarea');
+            }
+        });
+    }
 }
