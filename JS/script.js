@@ -1,73 +1,113 @@
-
+// script.js
 document.addEventListener('DOMContentLoaded', () => {
-    cargarTareas();
+    const modalNuevaTarea = new bootstrap.Modal(document.getElementById('modalNuevaTarea'));
+    const modalEditarTarea = new bootstrap.Modal(document.getElementById('modal-editar'));
 
-    document.getElementById('form-nueva-tarea').addEventListener('submit', crearTarea);
-    document.getElementById('form-editar-tarea').addEventListener('submit', guardarEdicionTarea);
-
-    // Cerrar el modal
-    document.querySelector('.cerrar').addEventListener('click', () => {
-        document.getElementById('modal-editar').style.display = 'none';
+    document.getElementById('nuevaTareaLink').addEventListener('click', (event) => {
+        event.preventDefault();
+        modalNuevaTarea.show();
     });
 
-    // Cerrar el modal si se hace clic fuera de él
-    window.addEventListener('click', (event) => {
-        if (event.target == document.getElementById('modal-editar')) {
-            document.getElementById('modal-editar').style.display = 'none';
+    document.getElementById('form-nueva-tarea').addEventListener('submit', (event) => {
+        event.preventDefault();
+        crearTarea(event.target);
+    });
+
+    document.getElementById('form-editar-tarea').addEventListener('submit', (event) => {
+        event.preventDefault();
+        guardarEdicionTarea(event.target);
+    });
+
+    document.getElementById('eliminar-tarea-modal').addEventListener('click', eliminarTareaModal);
+
+    // Agregar event listeners para los enlaces del navbar
+    document.querySelectorAll('.nav-link').forEach(link => {
+        if (link.id !== 'nuevaTareaLink') {
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+                mostrarTareas(event.target.getAttribute('data-tipo'));
+            });
         }
     });
 
-    // Eliminar tarea desde el modal
-    document.getElementById('eliminar-tarea-modal').addEventListener('click', eliminarTareaModal);
+    // Mostrar las tareas pendientes por defecto
+    mostrarTareas('Pendiente');
 });
 
-function cargarTareas() {
+function mostrarTareas(tipo) {
+    const contenedores = document.querySelectorAll('.columna-tareas');
+    const links = document.querySelectorAll('.nav-link');
+    
+    contenedores.forEach(contenedor => {
+        if (contenedor.id === `columna-${tipo.toLowerCase()}`) {
+            contenedor.classList.remove('d-none');
+        } else {
+            contenedor.classList.add('d-none');
+        }
+    });
+
+    links.forEach(link => {
+        if (link.getAttribute('data-tipo') === tipo) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
+
+    cargarTareas(tipo);
+}
+
+function cargarTareas(tipo) {
     fetch('obtener_tareas.php')
         .then(response => response.json())
         .then(tareas => {
-            const columnas = {
-                'Pendiente': document.getElementById('pendientes'),
-                'Ejecución': document.getElementById('ejecucion'),
-                'Finalizada': document.getElementById('finalizadas')
-            };
+            const contenedor = document.querySelector(`#columna-${tipo.toLowerCase()} .tareas-container`);
+            contenedor.innerHTML = '';
 
-            for (const estado in columnas) {
-                columnas[estado].innerHTML = `<h2>${estado}</h2>`;
+            const tareasFiltradasPorTipo = tareas.filter(tarea => tarea.estado === tipo);
+
+            if (tareasFiltradasPorTipo.length === 0) {
+                contenedor.innerHTML = '<p class="text-center">No hay tareas en esta categoría.</p>';
+            } else {
+                tareasFiltradasPorTipo.forEach(tarea => {
+                    const tareaElement = crearElementoTarea(tarea);
+                    contenedor.appendChild(tareaElement);
+                });
             }
-
-            tareas.forEach(tarea => {
-                const tareaElement = crearElementoTarea(tarea);
-                columnas[tarea.estado].appendChild(tareaElement);
-            });
+        })
+        .catch(error => {
+            console.error('Error al cargar las tareas:', error);
+            alert('Error al cargar las tareas. Por favor, intente de nuevo.');
         });
 }
 
 function crearElementoTarea(tarea) {
     const tareaElement = document.createElement('div');
-    tareaElement.className = 'tarea';
+    tareaElement.className = 'card mb-3';
     tareaElement.innerHTML = `
-        <h3>${tarea.titulo}</h3>
-        <p>${tarea.descripcion}</p>
-        <p>Fecha límite: ${tarea.fecha_limite}</p>
-        <select class="estado-tarea" data-id="${tarea.id}">
-            <option value="Pendiente" ${tarea.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
-            <option value="Ejecución" ${tarea.estado === 'Ejecución' ? 'selected' : ''}>En Ejecución</option>
-            <option value="Finalizada" ${tarea.estado === 'Finalizada' ? 'selected' : ''}>Finalizada</option>
-        </select>
-        <button class="editar-tarea" data-id="${tarea.id}">Editar</button>
-        <button class="boton-eliminar" data-id="${tarea.id}">Eliminar</button>
+        <div class="card-body">
+            <h5 class="card-title">${tarea.titulo}</h5>
+            <p class="card-text">${tarea.descripcion}</p>
+            <p class="card-text"><small class="text-muted">Fecha límite: ${tarea.fecha_limite}</small></p>
+            <select class="form-select estado-tarea mb-2" data-id="${tarea.id}">
+                <option value="Pendiente" ${tarea.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                <option value="Ejecución" ${tarea.estado === 'Ejecución' ? 'selected' : ''}>En Ejecución</option>
+                <option value="Finalizada" ${tarea.estado === 'Finalizada' ? 'selected' : ''}>Finalizada</option>
+            </select>
+            <button class="btn btn-primary btn-sm editar-tarea me-2" data-id="${tarea.id}">Editar</button>
+            <button class="btn btn-danger btn-sm eliminar-tarea" data-id="${tarea.id}">Eliminar</button>
+        </div>
     `;
 
     tareaElement.querySelector('.estado-tarea').addEventListener('change', actualizarEstadoTarea);
     tareaElement.querySelector('.editar-tarea').addEventListener('click', abrirModalEdicion);
-    tareaElement.querySelector('.boton-eliminar').addEventListener('click', eliminarTarea);
+    tareaElement.querySelector('.eliminar-tarea').addEventListener('click', eliminarTarea);
 
     return tareaElement;
 }
 
-function crearTarea(event) {
-    event.preventDefault();
-    const formData = new FormData(event.target);
+function crearTarea(form) {
+    const formData = new FormData(form);
 
     fetch('crear_tarea.php', {
         method: 'POST',
@@ -76,11 +116,16 @@ function crearTarea(event) {
     .then(response => response.json())
     .then(result => {
         if (result.success) {
-            cargarTareas();
-            event.target.reset();
+            mostrarTareas('Pendiente');
+            form.reset();
+            bootstrap.Modal.getInstance(document.getElementById('modalNuevaTarea')).hide();
         } else {
             alert('Error al crear la tarea');
         }
+    })
+    .catch(error => {
+        console.error('Error al crear la tarea:', error);
+        alert('Error al crear la tarea. Por favor, intente de nuevo.');
     });
 }
 
@@ -98,10 +143,14 @@ function actualizarEstadoTarea(event) {
     .then(response => response.json())
     .then(result => {
         if (result.success) {
-            cargarTareas();
+            mostrarTareas(nuevoEstado);
         } else {
             alert('Error al actualizar el estado de la tarea');
         }
+    })
+    .catch(error => {
+        console.error('Error al actualizar el estado de la tarea:', error);
+        alert('Error al actualizar el estado de la tarea. Por favor, intente de nuevo.');
     });
 }
 
@@ -115,13 +164,16 @@ function abrirModalEdicion(event) {
             document.getElementById('editar-descripcion').value = tarea.descripcion;
             document.getElementById('editar-fecha_limite').value = tarea.fecha_limite;
             document.getElementById('editar-estado').value = tarea.estado;
-            document.getElementById('modal-editar').style.display = 'block';
+            bootstrap.Modal.getInstance(document.getElementById('modal-editar')).show();
+        })
+        .catch(error => {
+            console.error('Error al abrir el modal de edición:', error);
+            alert('Error al cargar los datos de la tarea. Por favor, intente de nuevo.');
         });
 }
 
-function guardarEdicionTarea(event) {
-    event.preventDefault();
-    const formData = new FormData(event.target);
+function guardarEdicionTarea(form) {
+    const formData = new FormData(form);
 
     fetch('editar_tarea.php', {
         method: 'POST',
@@ -130,11 +182,15 @@ function guardarEdicionTarea(event) {
     .then(response => response.json())
     .then(result => {
         if (result.success) {
-            document.getElementById('modal-editar').style.display = 'none';
-            cargarTareas();
+            bootstrap.Modal.getInstance(document.getElementById('modal-editar')).hide();
+            mostrarTareas(formData.get('estado'));
         } else {
             alert('Error al editar la tarea');
         }
+    })
+    .catch(error => {
+        console.error('Error al editar la tarea:', error);
+        alert('Error al editar la tarea. Por favor, intente de nuevo.');
     });
 }
 
@@ -151,10 +207,14 @@ function eliminarTarea(event) {
         .then(response => response.json())
         .then(result => {
             if (result.success) {
-                cargarTareas();
+                mostrarTareas(document.querySelector('.nav-link.active').getAttribute('data-tipo'));
             } else {
                 alert('Error al eliminar la tarea');
             }
+        })
+        .catch(error => {
+            console.error('Error al eliminar la tarea:', error);
+            alert('Error al eliminar la tarea. Por favor, intente de nuevo.');
         });
     }
 }
@@ -172,11 +232,15 @@ function eliminarTareaModal() {
         .then(response => response.json())
         .then(result => {
             if (result.success) {
-                document.getElementById('modal-editar').style.display = 'none';
-                cargarTareas();
+                bootstrap.Modal.getInstance(document.getElementById('modal-editar')).hide();
+                mostrarTareas(document.querySelector('.nav-link.active').getAttribute('data-tipo'));
             } else {
                 alert('Error al eliminar la tarea');
             }
+        })
+        .catch(error => {
+            console.error('Error al eliminar la tarea:', error);
+            alert('Error al eliminar la tarea. Por favor, intente de nuevo.');
         });
     }
 }

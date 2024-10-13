@@ -1,4 +1,5 @@
-<?php
+<?php		
+			
 require_once 'conexion.php';
 ?>
 <!DOCTYPE html>
@@ -9,58 +10,137 @@ require_once 'conexion.php';
     <meta name="author" content="David Gutierrez">
     <title>Gestor de Tareas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    
     <link rel="stylesheet" href="CSS/style.css">
 </head>
 <body>
-    <header>
-        <h1>Gestor de Tareas</h1>
+    <header class="bg-primary text-white py-3">
+        <h1 class="text-center">Gestor de Tareas</h1>
     </header>
-    <main>
-        <section id="nueva-tarea">
-            <h2>Nueva Tarea</h2>
-            <form id="form-nueva-tarea">
-                <input type="text" id="titulo" name="titulo" placeholder="Título" required>
-                <textarea id="descripcion" name="descripcion" placeholder="Descripción"></textarea>
-                <input type="date" id="fecha_limite" name="fecha_limite" required>
-                <button type="submit">Crear Tarea</button>
-            </form>
-        </section>
-        <section id="tareas">
-            <div class="columna" id="pendientes">
-                <h2>Pendientes</h2>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top" role="navigation">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav w-100 justify-content-between">
+                    <li class="nav-item flex-fill text-center">
+                        <a class="nav-link active" href="#" data-tipo="Pendiente">Pendientes</a>
+                    </li>
+                    <li class="nav-item flex-fill text-center">
+                        <a class="nav-link" href="#" data-tipo="Ejecución">En Ejecución</a>
+                    </li>
+                    <li class="nav-item flex-fill text-center">
+                        <a class="nav-link" href="#" data-tipo="Finalizada">Finalizadas</a>
+                    </li>
+                    <li class="nav-item flex-fill text-center">
+                        <a class="nav-link" href="#" id="nuevaTareaLink">Nueva Tarea</a>
+                    </li>
+                </ul>
             </div>
-            <div class="columna" id="ejecucion">
-                <h2>En Ejecución</h2>
+        </div>
+    </nav>
+    <main class="container mt-4">
+        <section id="tareas" class="row">
+            <div id="columna-pendiente" class="col-12 mb-4 columna-tareas">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="mb-0">Tareas Pendientes</h2>
+                    </div>
+                    <div class="card-body tareas-container"></div>
+                </div>
             </div>
-            <div class="columna" id="finalizadas">
-                <h2>Finalizadas</h2>
+            <div id="columna-ejecución" class="col-12 mb-4 columna-tareas d-none">
+                <div class="card">
+                    <div class="card-header bg-warning text-dark">
+                        <h2 class="mb-0">Tareas en Ejecución</h2>
+                    </div>
+                    <div class="card-body tareas-container"></div>
+                </div>
+            </div>
+            <div id="columna-finalizada" class="col-12 mb-4 columna-tareas d-none">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h2 class="mb-0">Tareas Finalizadas</h2>
+                    </div>
+                    <div class="card-body tareas-container"></div>
+                </div>
             </div>
         </section>
     </main>
 
-    <!-- Modal de edición -->
-    <div id="modal-editar" class="modal">
-        <div class="modal-contenido">
-            <span class="cerrar">&times;</span>
-            <h2>Editar Tarea</h2>
-            <form id="form-editar-tarea">
-                <input type="hidden" id="editar-id" name="id">
-                <input type="text" id="editar-titulo" name="titulo" placeholder="Título" required>
-                <textarea id="editar-descripcion" name="descripcion" placeholder="Descripción"></textarea>
-                <input type="date" id="editar-fecha_limite" name="fecha_limite" required>
-                <select id="editar-estado" name="estado">
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="Ejecución">En Ejecución</option>
-                    <option value="Finalizada">Finalizada</option>
-                </select>
-                <button type="submit">Guardar Cambios</button>
-            </form>
-            <button id="eliminar-tarea-modal" class="boton-eliminar">Eliminar Tarea</button>
+    <!-- Modal Nueva Tarea -->
+    <div class="modal fade" id="modalNuevaTarea" tabindex="-1" aria-labelledby="modalNuevaTareaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalNuevaTareaLabel">Nueva Tarea</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-nueva-tarea">
+                        <div class="mb-3">
+                            <label for="titulo" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="titulo" name="titulo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="descripcion" name="descripcion"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fecha_limite" class="form-label">Fecha límite</label>
+                            <input type="date" class="form-control" id="fecha_limite"   name="fecha_limite" required>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Crear Tarea</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
-    
-    <script src="JS/script.js"></script>
+
+    <!-- Modal Editar Tarea -->
+    <div class="modal fade" id="modal-editar" tabindex="-1" aria-labelledby="modalEditarTareaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditarTareaLabel">Editar Tarea</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-editar-tarea">
+                        <input type="hidden" id="editar-id" name="id">
+                        <div class="mb-3">
+                            <label for="editar-titulo" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="editar-titulo" name="titulo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editar-descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="editar-descripcion" name="descripcion"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editar-fecha_limite" class="form-label">Fecha límite</label>
+                            <input type="date" class="form-control" id="editar-fecha_limite" name="fecha_limite" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editar-estado" class="form-label">Estado</label>
+                            <select class="form-select" id="editar-estado" name="estado">
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="Ejecución">En Ejecución</option>
+                                <option value="Finalizada">Finalizada</option>
+                            </select>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary me-2">Guardar Cambios</button>
+                            <button type="button" id="eliminar-tarea-modal" class="btn btn-danger">Eliminar Tarea</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="JS/script.js"></script>
 </body>
 </html>
