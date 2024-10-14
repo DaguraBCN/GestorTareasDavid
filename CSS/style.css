@@ -121,3 +121,13 @@ body {
     outline: 3px solid var(--color-secondary);
     outline-offset: 2px;
 }
+
+/* Recodificación de las clases de bootstrap */
+.navbar-toggler {
+    background-color: var(--color-light);
+    color: var(--color-secondary);
+}
+
+.card-header.bg-primary {
+    background-color: rgba(var(--bs-primary-rgb),var(--bs-bg-opacity)) !important;
+}

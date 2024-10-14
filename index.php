@@ -87,8 +87,17 @@ require_once 'conexion.php';
                             <textarea class="form-control" id="descripcion" name="descripcion"></textarea>
                         </div>
                         <div class="mb-3">
+                            <label for="prioridad" class="form-label">Prioridad</label>
+                            <select class="form-select" id="prioridad" name="prioridad">
+                                <option value="Urgente">Urgente</option>
+                                <option value="Alta">Alta</option>
+                                <option value="Media">Media</option>
+                                <option value="Baja">Baja</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
                             <label for="fecha_limite" class="form-label">Fecha límite</label>
-                            <input type="date" class="form-control" id="fecha_limite"   name="fecha_limite" required>
+                            <input type="date" class="form-control" id="fecha_limite"   name="fecha_limite" min="<?php echo date('Y-m-d'); ?>" required>
                         </div>
                         <div class="text-center">
                             <button type="submit" class="btn btn-primary">Crear Tarea</button>
@@ -120,7 +129,16 @@ require_once 'conexion.php';
                         </div>
                         <div class="mb-3">
                             <label for="editar-fecha_limite" class="form-label">Fecha límite</label>
-                            <input type="date" class="form-control" id="editar-fecha_limite" name="fecha_limite" required>
+                            <input type="date" class="form-control" id="editar-fecha_limite" name="fecha_limite" min="<?php echo date('Y-m-d'); ?>"required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editar-prioridad" class="form-label">Prioridad</label>
+                            <select class="form-select" id="editar-prioridad" name="prioridad">
+                                <option value="Urgente">Urgente</option>
+                                <option value="Alta">Alta</option>
+                                <option value="Media">Media</option>
+                                <option value="Baja">Baja</option>
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label for="editar-estado" class="form-label">Estado</label>
