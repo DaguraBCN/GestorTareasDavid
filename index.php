@@ -46,7 +46,7 @@ require_once 'conexion.php';
                     <div class="card-header bg-primary text-white">
                         <h2 class="mb-0">Tareas Pendientes</h2>
                     </div>
-                    <div class="card-body tareas-container"></div>
+                    <div class="card-body tareas-container row"></div>
                 </div>
             </div>
             <div id="columna-ejecución" class="col-12 mb-4 columna-tareas d-none">
@@ -54,7 +54,7 @@ require_once 'conexion.php';
                     <div class="card-header bg-warning text-dark">
                         <h2 class="mb-0">Tareas en Ejecución</h2>
                     </div>
-                    <div class="card-body tareas-container"></div>
+                    <div class="card-body tareas-container row"></div>
                 </div>
             </div>
             <div id="columna-finalizada" class="col-12 mb-4 columna-tareas d-none">
@@ -62,7 +62,7 @@ require_once 'conexion.php';
                     <div class="card-header bg-success text-white">
                         <h2 class="mb-0">Tareas Finalizadas</h2>
                     </div>
-                    <div class="card-body tareas-container"></div>
+                    <div class="card-body tareas-container row"></div>
                 </div>
             </div>
         </section>
@@ -91,7 +91,7 @@ require_once 'conexion.php';
                             <select class="form-select" id="prioridad" name="prioridad">
                                 <option value="Urgente">Urgente</option>
                                 <option value="Alta">Alta</option>
-                                <option value="Media">Media</option>
+                                <option value="Media" selected>Media</option>
                                 <option value="Baja">Baja</option>
                             </select>
                         </div>
@@ -136,7 +136,7 @@ require_once 'conexion.php';
                             <select class="form-select" id="editar-prioridad" name="prioridad">
                                 <option value="Urgente">Urgente</option>
                                 <option value="Alta">Alta</option>
-                                <option value="Media">Media</option>
+                                <option value="Media" selected>Media</option>
                                 <option value="Baja">Baja</option>
                             </select>
                         </div>

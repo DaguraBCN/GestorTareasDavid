@@ -83,9 +83,27 @@ function cargarTareas(tipo) {
 
 function crearElementoTarea(tarea) {
     const tareaElement = document.createElement('div');
-    tareaElement.className = 'card mb-3';
+    // tareaElement.className = 'card mb-3';
+    tareaElement.className = 'col-12 col-md-4 mb-3';
+    let badgeClass;
+    switch (tarea.prioridad) {
+        case 'Urgente':
+            badgeClass = 'bg-danger';
+            break;
+        case 'Alta':
+            badgeClass = 'bg-warning';
+            break;
+        case 'Media':
+            badgeClass = 'bg-success';
+            break;
+        default:
+            badgeClass = 'bg-secondary';
+    }
+
     tareaElement.innerHTML = `
-        <div class="card-body">
+    <div class="card">
+        <div class="card-body position-relative">
+            <span class="badge ${badgeClass} position-absolute top-0 end-0 m-2">${tarea.prioridad}</span>
             <h5 class="card-title">${tarea.titulo}</h5>
             <p class="card-text">${tarea.descripcion}</p>
             <p class="card-text"><small class="text-muted">Fecha límite: ${tarea.fecha_limite}</small></p>
@@ -97,11 +115,13 @@ function crearElementoTarea(tarea) {
             <button class="btn btn-primary btn-sm editar-tarea me-2" data-id="${tarea.id}">Editar</button>
             <button class="btn btn-danger btn-sm eliminar-tarea" data-id="${tarea.id}">Eliminar</button>
         </div>
+    </div>
     `;
 
     tareaElement.querySelector('.estado-tarea').addEventListener('change', actualizarEstadoTarea);
     tareaElement.querySelector('.editar-tarea').addEventListener('click', abrirModalEdicion);
     tareaElement.querySelector('.eliminar-tarea').addEventListener('click', eliminarTarea);
+    console.log("Elemento de tarea finalizado:", tareaElement);
 
     return tareaElement;
 }
@@ -163,6 +183,7 @@ function abrirModalEdicion(event) {
             document.getElementById('editar-titulo').value = tarea.titulo;
             document.getElementById('editar-descripcion').value = tarea.descripcion;
             document.getElementById('editar-fecha_limite').value = tarea.fecha_limite;
+            document.getElementById('editar-prioridad').value = tarea.prioridad;
             document.getElementById('editar-estado').value = tarea.estado;
             bootstrap.Modal.getInstance(document.getElementById('modal-editar')).show();
         })
