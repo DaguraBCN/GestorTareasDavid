@@ -10,6 +10,7 @@ require_once 'conexion.php';
     <meta name="author" content="David Gutierrez">
     <title>Gestor de Tareas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="CSS/style.css">
 </head>
 <body>
@@ -100,7 +101,7 @@ require_once 'conexion.php';
                             <input type="date" class="form-control" id="fecha_limite"   name="fecha_limite" min="<?php echo date('Y-m-d'); ?>" required>
                         </div>
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Crear Tarea</button>
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-journal-plus"></i> Crear Tarea</button>
                         </div>
                     </form>
                 </div>
@@ -149,8 +150,8 @@ require_once 'conexion.php';
                             </select>
                         </div>
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary me-2">Guardar Cambios</button>
-                            <button type="button" id="eliminar-tarea-modal" class="btn btn-danger">Eliminar Tarea</button>
+                            <button type="submit" class="btn btn-primary me-2"><i class="bi bi-journal-check"></i> Guardar Cambios</button>
+                            <button type="button" id="eliminar-tarea-modal" class="btn btn-danger"><i class="bi bi-journal-x"></i> Eliminar Tarea</button>
                         </div>
                     </form>
                 </div>

@@ -83,7 +83,6 @@ function cargarTareas(tipo) {
 
 function crearElementoTarea(tarea) {
     const tareaElement = document.createElement('div');
-    // tareaElement.className = 'card mb-3';
     tareaElement.className = 'col-12 col-md-4 mb-3';
     let badgeClass;
     switch (tarea.prioridad) {
@@ -100,6 +99,21 @@ function crearElementoTarea(tarea) {
             badgeClass = 'bg-secondary';
     }
 
+    let buttonClass;
+    switch (tarea.estado) {
+        case 'Pendiente':
+            buttonClass = 'btn-pendiente';
+            break;
+        case 'Ejecución':
+            buttonClass = 'btn-warning';
+            break;
+        case 'Finalizada':
+            buttonClass = 'btn-finalizada';
+            break;
+        default:
+            buttonClass = 'btn-secondary';
+    }
+
     tareaElement.innerHTML = `
     <div class="card">
         <div class="card-body position-relative">
@@ -112,8 +126,10 @@ function crearElementoTarea(tarea) {
                 <option value="Ejecución" ${tarea.estado === 'Ejecución' ? 'selected' : ''}>En Ejecución</option>
                 <option value="Finalizada" ${tarea.estado === 'Finalizada' ? 'selected' : ''}>Finalizada</option>
             </select>
-            <button class="btn btn-primary btn-sm editar-tarea me-2" data-id="${tarea.id}">Editar</button>
-            <button class="btn btn-danger btn-sm eliminar-tarea" data-id="${tarea.id}">Eliminar</button>
+            <div class="d-flex justify-content-around">
+                <button class="btn ${buttonClass} btn-lg editar-tarea" data-id="${tarea.id}"><i class="bi bi-pencil-square"></i> Editar</button>
+                <button class="btn btn-danger btn-lg eliminar-tarea" data-id="${tarea.id}"><i class="bi bi-journal-x"></i> Eliminar</button>
+            </div>
         </div>
     </div>
     `;
@@ -125,6 +141,7 @@ function crearElementoTarea(tarea) {
 
     return tareaElement;
 }
+
 
 function crearTarea(form) {
     const formData = new FormData(form);
