@@ -1,4 +1,26 @@
 // script.js
+
+// Solicitar permisos de notificación
+if (Notification.permission === 'default') {
+    Notification.requestPermission().then(permission => {
+        if (permission !== 'granted') {
+            console.log('Permiso de notificación denegado.');
+        }
+    });
+}
+
+// Crear una función para mostrar notificaciones
+function mostrarNotificacion(tarea) {
+    if (Notification.permission === 'granted') {
+        const opciones = {
+            body: `¡No olvides: ${tarea.descripcion}`,
+            icon: 'icons/portapapeles.png' 
+        };
+
+        new Notification(tarea.titulo, opciones);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const modalNuevaTarea = new bootstrap.Modal(document.getElementById('modalNuevaTarea'));
     const modalEditarTarea = new bootstrap.Modal(document.getElementById('modal-editar'));
@@ -112,6 +134,10 @@ function crearElementoTarea(tarea) {
             break;
         default:
             buttonClass = 'btn-secondary';
+    }
+
+    if (tarea.prioridad === 'Urgente') {
+        mostrarNotificacion(tarea);
     }
 
     tareaElement.innerHTML = `
