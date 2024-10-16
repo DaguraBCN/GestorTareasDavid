@@ -11,14 +11,15 @@ if (Notification.permission === 'default') {
 
 // Crear una función para mostrar notificaciones
 function mostrarNotificacion(tarea) {
-    if (Notification.permission === 'granted') {
-        const opciones = {
-            body: `¡No olvides: ${tarea.descripcion}`,
-            icon: 'icons/portapapeles.png' 
-        };
-
+    if (tarea.estado !=='Finalizada') {
+        if (Notification.permission === 'granted') {
+            const opciones = {
+                body: `¡No olvides: ${tarea.descripcion}`,
+                icon: 'icons/portapapeles.png' 
+            };
         new Notification(tarea.titulo, opciones);
     }
+}
 }
 
 document.addEventListener('DOMContentLoaded', () => {
