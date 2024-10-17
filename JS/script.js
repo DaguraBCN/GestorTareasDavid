@@ -309,3 +309,27 @@ function eliminarTareaModal() {
         });
     }
 }
+
+// Función para realizar las busquedas en las tareas
+function activarBusqueda(estado) {
+    document.getElementById(`buscar-tarea-${estado.toLowerCase()}`).addEventListener('input', function() {
+        const terminoBusqueda = this.value.toLowerCase();
+        const tareas = document.querySelectorAll(`.columna-tareas[data-estado="${estado}"] .card`);
+
+        tareas.forEach(function(tarea) {
+            const titulo = tarea.querySelector('.card-title').textContent.toLowerCase();
+            const descripcion = tarea.querySelector('.card-text').textContent.toLowerCase();
+
+            if (titulo.includes(terminoBusqueda) || descripcion.includes(terminoBusqueda)) {
+                tarea.parentElement.style.display = '';
+            } else {
+                tarea.parentElement.style.display = 'none';
+            }
+        });
+    });
+}
+
+// Activar búsqueda para cada estado
+activarBusqueda('Pendiente');
+activarBusqueda('Ejecucion');
+activarBusqueda('Finalizada');
