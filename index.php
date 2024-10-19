@@ -1,5 +1,4 @@
 <?php		
-			
 require_once 'conexion.php';
 ?>
 <!DOCTYPE html>
@@ -28,7 +27,7 @@ require_once 'conexion.php';
                         <a class="nav-link active" href="#" data-tipo="Pendiente">Pendientes</a>
                     </li>
                     <li class="nav-item flex-fill text-center">
-                        <a class="nav-link" href="#" data-tipo="Ejecución">En Ejecución</a>
+                        <a class="nav-link" href="#" data-tipo="Ejecucion">En Ejecución</a>
                     </li>
                     <li class="nav-item flex-fill text-center">
                         <a class="nav-link" href="#" data-tipo="Finalizada">Finalizadas</a>
@@ -42,26 +41,43 @@ require_once 'conexion.php';
     </nav>
     <main class="container mt-4">
         <section id="tareas" class="row">
+            <!-- Tareas Pendientes -->
             <div id="columna-pendiente" class="col-12 mb-4 columna-tareas">
                 <div class="card">
-                    <div class="card-header bg-primary text-white">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <h2 class="mb-0">Tareas Pendientes</h2>
+                        <div class="position-relative w-50">
+                            <img src="icons/buscar.png" class="icono-busqueda" alt="Icono de búsqueda">
+                            <input type="text" class="form-control ps-5" id="busqueda-pendiente" placeholder="Buscar tareas...">
+                        </div>
                     </div>
                     <div class="card-body tareas-container row"></div>
                 </div>
             </div>
-            <div id="columna-ejecución" class="col-12 mb-4 columna-tareas d-none">
+            
+            <!-- Tareas en Ejecución -->
+            <div id="columna-ejecucion" class="col-12 mb-4 columna-tareas d-none">
                 <div class="card">
-                    <div class="card-header bg-warning text-dark">
+                    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
                         <h2 class="mb-0">Tareas en Ejecución</h2>
+                        <div class="position-relative w-50">
+                            <img src="icons/buscar.png" class="icono-busqueda" alt="Icono de búsqueda">
+                            <input type="text" class="form-control ps-5" id="busqueda-ejecucion" placeholder="Buscar tareas...">
+                        </div>
                     </div>
                     <div class="card-body tareas-container row"></div>
                 </div>
             </div>
+
+            <!-- Tareas Finalizadas -->
             <div id="columna-finalizada" class="col-12 mb-4 columna-tareas d-none">
                 <div class="card">
-                    <div class="card-header bg-success text-white">
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
                         <h2 class="mb-0">Tareas Finalizadas</h2>
+                        <div class="position-relative w-50">
+                            <img src="icons/buscar.png" class="icono-busqueda" alt="Icono de búsqueda">
+                            <input type="text" class="form-control ps-5" id="busqueda-finalizada" placeholder="Buscar tareas...">
+                        </div>
                     </div>
                     <div class="card-body tareas-container row"></div>
                 </div>
@@ -145,7 +161,7 @@ require_once 'conexion.php';
                             <label for="editar-estado" class="form-label">Estado</label>
                             <select class="form-select" id="editar-estado" name="estado">
                                 <option value="Pendiente">Pendiente</option>
-                                <option value="Ejecución">En Ejecución</option>
+                                <option value="Ejecucion">En Ejecución</option>
                                 <option value="Finalizada">Finalizada</option>
                             </select>
                         </div>

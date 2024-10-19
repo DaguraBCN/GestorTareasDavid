@@ -26,6 +26,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalNuevaTarea = new bootstrap.Modal(document.getElementById('modalNuevaTarea'));
     const modalEditarTarea = new bootstrap.Modal(document.getElementById('modal-editar'));
 
+    // Escuchar el evento de búsqueda en cada estado
+    document.getElementById('busqueda-pendiente').addEventListener('input', (event) => {
+        buscarTareas('Pendiente', event.target.value);
+    });
+    document.getElementById('busqueda-ejecucion').addEventListener('input', (event) => {
+        buscarTareas('Ejecucion', event.target.value);
+    });
+    document.getElementById('busqueda-finalizada').addEventListener('input', (event) => {
+        buscarTareas('Finalizada', event.target.value);
+    });
+
     document.getElementById('nuevaTareaLink').addEventListener('click', (event) => {
         event.preventDefault();
         modalNuevaTarea.show();
@@ -81,27 +92,28 @@ function mostrarTareas(tipo) {
 }
 
 function cargarTareas(tipo) {
-    fetch('obtener_tareas.php')
-        .then(response => response.json())
-        .then(tareas => {
-            const contenedor = document.querySelector(`#columna-${tipo.toLowerCase()} .tareas-container`);
-            contenedor.innerHTML = '';
+    buscarTareas(tipo, '');
+    // fetch('obtener_tareas.php')
+    //     .then(response => response.json())
+    //     .then(tareas => {
+    //         const contenedor = document.querySelector(`#columna-${tipo.toLowerCase()} .tareas-container`);
+    //         contenedor.innerHTML = '';
 
-            const tareasFiltradasPorTipo = tareas.filter(tarea => tarea.estado === tipo);
+    //         const tareasFiltradasPorTipo = tareas.filter(tarea => tarea.estado === tipo);
 
-            if (tareasFiltradasPorTipo.length === 0) {
-                contenedor.innerHTML = '<p class="text-center">No hay tareas en esta categoría.</p>';
-            } else {
-                tareasFiltradasPorTipo.forEach(tarea => {
-                    const tareaElement = crearElementoTarea(tarea);
-                    contenedor.appendChild(tareaElement);
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Error al cargar las tareas:', error);
-            alert('Error al cargar las tareas. Por favor, intente de nuevo.');
-        });
+    //         if (tareasFiltradasPorTipo.length === 0) {
+    //             contenedor.innerHTML = '<p class="text-center">No hay tareas en esta categoría.</p>';
+    //         } else {
+    //             tareasFiltradasPorTipo.forEach(tarea => {
+    //                 const tareaElement = crearElementoTarea(tarea);
+    //                 contenedor.appendChild(tareaElement);
+    //             });
+    //         }
+    //     })
+    //     .catch(error => {
+    //         console.error('Error al cargar las tareas:', error);
+    //         alert('Error al cargar las tareas. Por favor, intente de nuevo.');
+    //     });
 }
 
 function crearElementoTarea(tarea) {
@@ -127,7 +139,7 @@ function crearElementoTarea(tarea) {
         case 'Pendiente':
             buttonClass = 'btn-pendiente';
             break;
-        case 'Ejecución':
+        case 'Ejecucion':
             buttonClass = 'btn-warning';
             break;
         case 'Finalizada':
@@ -150,7 +162,7 @@ function crearElementoTarea(tarea) {
             <p class="card-text"><small class="text-muted">Fecha límite: ${tarea.fecha_limite}</small></p>
             <select class="form-select estado-tarea mb-2" data-id="${tarea.id}">
                 <option value="Pendiente" ${tarea.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
-                <option value="Ejecución" ${tarea.estado === 'Ejecución' ? 'selected' : ''}>En Ejecución</option>
+                <option value="Ejecucion" ${tarea.estado === 'Ejecucion' ? 'selected' : ''}>En Ejecución</option>
                 <option value="Finalizada" ${tarea.estado === 'Finalizada' ? 'selected' : ''}>Finalizada</option>
             </select>
             <div class="d-flex justify-content-around">
@@ -311,25 +323,33 @@ function eliminarTareaModal() {
 }
 
 // Función para realizar las busquedas en las tareas
-function activarBusqueda(estado) {
-    document.getElementById(`buscar-tarea-${estado.toLowerCase()}`).addEventListener('input', function() {
-        const terminoBusqueda = this.value.toLowerCase();
-        const tareas = document.querySelectorAll(`.columna-tareas[data-estado="${estado}"] .card`);
+function buscarTareas(tipo, terminoBusqueda) {
+    fetch('obtener_tareas.php')
+        .then(response => response.json())
+        .then(tareas => {
+            const contenedor = document.querySelector(`#columna-${tipo.toLowerCase()} .tareas-container`);
+            contenedor.innerHTML = '';
 
-        tareas.forEach(function(tarea) {
-            const titulo = tarea.querySelector('.card-title').textContent.toLowerCase();
-            const descripcion = tarea.querySelector('.card-text').textContent.toLowerCase();
+            const tareasFiltradas = tareas.filter(tarea => 
+                tarea.estado === tipo && 
+                (
+                tarea.titulo.toLowerCase().includes(terminoBusqueda.toLowerCase()) ||
+                tarea.descripcion.toLowerCase().includes(terminoBusqueda.toLowerCase()) ||
+                tarea.prioridad.toLowerCase().includes(terminoBusqueda.toLowerCase())
+                )
+            );
 
-            if (titulo.includes(terminoBusqueda) || descripcion.includes(terminoBusqueda)) {
-                tarea.parentElement.style.display = '';
+            if (tareasFiltradas.length === 0) {
+                contenedor.innerHTML = '<p class="text-center">No hay tareas que coincidan con la búsqueda.</p>';
             } else {
-                tarea.parentElement.style.display = 'none';
+                tareasFiltradas.forEach(tarea => {
+                    const tareaElement = crearElementoTarea(tarea);
+                    contenedor.appendChild(tareaElement);
+                });
             }
+        })
+        .catch(error => {
+            console.error('Error al buscar tareas:', error);
+            alert('Error al buscar tareas. Por favor, intente de nuevo.');
         });
-    });
 }
-
-// Activar búsqueda para cada estado
-activarBusqueda('Pendiente');
-activarBusqueda('Ejecucion');
-activarBusqueda('Finalizada');

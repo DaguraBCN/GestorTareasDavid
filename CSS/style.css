@@ -155,3 +155,21 @@ body {
     border-color: #229d3f;
     color: var(--color-light);
 }
+
+/* Añadir icono de busqueda */
+.position-relative {
+    position: relative;
+}
+
+.icono-busqueda {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    width: 20px; /* Ajusta el tamaño del icono si es necesario */
+    height: 20px; /* Ajusta el tamaño del icono si es necesario */
+}
+
+.ps-5 {
+    padding-left: 2.5rem; /* Ajusta el espacio de acuerdo al tamaño del icono */
+}
