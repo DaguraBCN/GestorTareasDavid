@@ -1,9 +1,9 @@
 <?php
 
 $host = 'localhost';
-$db   = 'gestor_tareas_David';
+$db   = 'gestor_tareas_david';
 $user = 'root';
-$pass = '';
+$pass = '1234';
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
